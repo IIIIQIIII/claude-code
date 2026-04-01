@@ -111,7 +111,7 @@ function detectGateway({
   headers?: globalThis.Headers
   baseUrl?: string
 }): KnownGateway | undefined {
-  if (headers) {
+  if (headers && typeof headers.forEach === 'function') {
     // Header names are already lowercase from the Headers API
     const headerNames: string[] = []
     headers.forEach((_, key) => headerNames.push(key))

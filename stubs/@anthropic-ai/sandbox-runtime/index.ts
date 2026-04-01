@@ -30,7 +30,7 @@ export class SandboxManager {
   static getLinuxHttpSocketPath(): string | null { return null }
   static getLinuxSocksSocketPath(): string | null { return null }
   static async waitForNetworkInitialization() {}
-  static getSandboxViolationStore(): any { return { getViolations() { return [] } } }
+  static getSandboxViolationStore(): SandboxViolationStore { return new SandboxViolationStore() }
   static annotateStderrWithSandboxFailures(_command: string, stderr: string): string { return stderr }
   static cleanupAfterCommand(): void {}
   static getLinuxGlobPatternWarnings(): string[] { return [] }
@@ -38,6 +38,14 @@ export class SandboxManager {
 }
 export const SandboxRuntimeConfigSchema = {} as any
 export class SandboxViolationStore {
+  private _listeners: Array<(violations: any[]) => void> = []
   constructor(..._args: any[]) {}
   getViolations() { return [] }
+  getTotalCount() { return 0 }
+  subscribe(listener: (violations: any[]) => void): () => void {
+    this._listeners.push(listener)
+    return () => {
+      this._listeners = this._listeners.filter(l => l !== listener)
+    }
+  }
 }
